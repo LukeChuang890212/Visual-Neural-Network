@@ -1,9 +1,10 @@
 #%%
 import layers
+from layers import tf
 
 #%%
 class ResnetIdentityBlock(tf.keras.Model):
-  def __init__(self, kernel_size, filters):
+  def __init__(self,):
     super(ResnetIdentityBlock, self).__init__(name='')
     filters1, filters2, filters3 = filters
 

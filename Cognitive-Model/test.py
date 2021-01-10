@@ -118,7 +118,6 @@ class MyDenseLayer(tf.keras.layers.Layer):
     self.kernel = self.add_weight("kernel",
                                   shape=[int(input_shape[-1]),
                                          self.num_outputs])
-
   def call(self, input):
     return tf.matmul(input, self.kernel)
 
@@ -127,7 +126,7 @@ layer(tf.zeros([10, 5]))
 
 # print(layer.variables)
 # print(layer.trainable_variables)
-print([var.name for var in layer.trainable_variables])
+# print([var.name for var in layer.trainable_variables])
 
 #%%
 class ResnetIdentityBlock(tf.keras.Model):
