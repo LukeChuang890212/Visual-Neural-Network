@@ -21,7 +21,7 @@ neutral_trials = np.array_split(neutral_trials,len(neutral_trials)/2)
 record = []
 for trial_type in enumerate([valid_trials, invalid_trials, neutral_trials]):
     for trial in trial_type[1]:
-        print(len(trial))
+        # print(len(trial))
         if len(trial) != 2 and len(trial) != 4:
             continue
         if trial_type[0] != 2:
@@ -44,5 +44,5 @@ for trial_type in enumerate([valid_trials, invalid_trials, neutral_trials]):
         record[-1] += model(target,iscue = False)
 
         # print("record")
-        print(pd.DataFrame(record))
+        # print(pd.DataFrame(record))
         

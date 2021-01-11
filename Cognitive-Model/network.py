@@ -1,7 +1,10 @@
 #%%
 import layers
+
 from layers import tf
 from connections import np
+
+from random import shuffle
 
 #%%
 def two_d_softmax(tensor):
@@ -10,6 +13,49 @@ def two_d_softmax(tensor):
   one_d_arr = two_d_arr.flatten()
   arr = tf.nn.softmax(one_d_arr.astype(float)).numpy().reshape(list(shape))
   return tf.convert_to_tensor(arr)
+
+def input_to_v1(self):
+  self.v1_arr = (two_d_softmax(self.input_layer(self.input_tensor))+self.v1_arr)/1
+
+def v1_to_spat1(self):
+  self.spat1_arr = (two_d_softmax(self.v1(self.v1_arr, "Spat1"))+self.spat1_arr)/1
+def spat1_to_v1(self):
+  self.v1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "V1"))+self.v1_arr)/1
+
+def spat1_to_spat2(self):  
+  self.spat2_arr = (two_d_softmax(self.spat1(self.spat1_arr, "Spat2"))+self.spat2_arr)/1
+def spat2_to_spat1(self):
+  self.spat1_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Spat1"))+self.spat1_arr)/1
+
+def v1_to_obj1(self):
+  self.obj1_arr = (two_d_softmax(self.v1(self.v1_arr, "Obj1"))+self.obj1_arr)/1
+def obj1_to_v1(self):
+  self.v1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "V1"))+self.v1_arr)/1
+
+def obj1_to_obj2(self):   
+  self.obj2_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Obj2"))+self.obj2_arr)/1
+def obj2_to_obj1(self):
+  self.obj1_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Obj1"))+self.obj1_arr)/1
+
+def spat1_to_obj1(self):
+  self.obj1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "Obj1"))+self.obj1_arr)/1
+def obj1_to_spat1(self):
+  self.spat1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Spat1"))+self.spat1_arr)/1
+
+def spat2_to_obj2(self):
+  self.obj2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Obj2"))+self.obj2_arr)/1
+def obj2_to_spat2(self):
+  self.spat2_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Spat2"))+self.spat2_arr)/1
+
+def obj2_to_output(self):       
+  self.output_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)/1
+def output_to_obj2(self):      
+  self.obj2_arr = (two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)/1
+
+def spat1_lateral_inhibit(self):
+  self.spat1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "self"))+self.spat1_arr)/1
+def spat2_lateral_inhibit(self):
+  self.spat2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "self"))+self.spat2_arr)/1
 
 #%%
 class VisualNetWork(tf.keras.Model):
@@ -33,73 +79,49 @@ class VisualNetWork(tf.keras.Model):
     self.output_arr = tf.zeros([2,1],dtype=tf.dtypes.double)
   
   def call(self, input_tensor, iscue):
+    self.input_tensor = input_tensor
+
+    path_functions = [input_to_v1,
+                          v1_to_spat1,
+                          spat1_to_v1,
+                          spat1_to_spat2,
+                          spat2_to_spat1,
+                          v1_to_obj1,
+                          obj1_to_v1,
+                          obj1_to_obj2,
+                          obj2_to_obj1,
+                          spat1_to_obj1,
+                          obj1_to_spat1,
+                          spat2_to_obj2,
+                          obj2_to_spat2,
+                          obj2_to_output,
+                          output_to_obj2,
+                          spat1_lateral_inhibit,
+                          spat2_lateral_inhibit]
     if iscue:
       cycle = 0
       while(cycle < 100):
-        self.v1_arr = (two_d_softmax(self.input_layer(input_tensor))+self.v1_arr)/2
+        shuffle(path_functions)
 
-        self.spat1_arr = (two_d_softmax(self.v1(self.v1_arr, "Spat1"))+self.spat1_arr)/2
-        self.v1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "V1"))+self.v1_arr)/2
-
-        self.spat2_arr = (two_d_softmax(self.spat1(self.spat1_arr, "Spat2"))+self.spat2_arr)/2
-        self.spat1_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Spat1"))+self.spat1_arr)/2
-
-        self.obj1_arr = (two_d_softmax(self.v1(self.v1_arr, "Obj1"))+self.obj1_arr)/2
-        self.v1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "V1"))+self.v1_arr)/2
-        
-        self.obj2_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Obj2"))+self.obj2_arr)/2
-        self.obj1_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Obj1"))+self.obj1_arr)/2
-
-        self.obj1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "Obj1"))+self.obj1_arr)/2
-        self.spat1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Spat1"))+self.spat1_arr)/2
-
-        self.obj2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Obj2"))+self.obj2_arr)/2
-        self.spat2_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Spat2"))+self.spat2_arr)/2
-        
-        self.output_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)/2
-        self.obj2_arr = (two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)/2
-
-        self.spat1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "self"))+self.spat1_arr)/2
-        self.spat2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "self"))+self.spat2_arr)/2    
+        for path_f in path_functions:
+          path_f(self)  
 
         cycle += 1
     else:  
       cycle = 0
       target_node = self.output_arr[0][0]
       while(float(target_node) < 0.6):
-        self.v1_arr = (two_d_softmax(self.input_layer(input_tensor))+self.v1_arr)/2
+        shuffle(path_functions)
 
-        print(self.spat1_arr)
-        print(two_d_softmax(self.v1(self.v1_arr, "Spat1")))
-        self.spat1_arr = (two_d_softmax(self.v1(self.v1_arr, "Spat1"))+self.spat1_arr)/2
-        self.v1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "V1"))+self.v1_arr)/2
-        print(self.spat1_arr)
-        input("continue")
+        for path_f in path_functions:
+          path_f(self)  
 
-        self.spat2_arr = (two_d_softmax(self.spat1(self.spat1_arr, "Spat2"))+self.spat2_arr)/2
-        self.spat1_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Spat1"))+self.spat1_arr)/2
-
-        self.obj1_arr = (two_d_softmax(self.v1(self.v1_arr, "Obj1"))+self.obj1_arr)/2
-        self.v1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "V1"))+self.v1_arr)/2
-        
-        self.obj2_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Obj2"))+self.obj2_arr)/2
-        self.obj1_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Obj1"))+self.obj1_arr)/2
-
-        self.obj1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "Obj1"))+self.obj1_arr)/2
-        self.spat1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Spat1"))+self.spat1_arr)/2
-
-        self.obj2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Obj2"))+self.obj2_arr)/2
-        self.spat2_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Spat2"))+self.spat2_arr)/2
-        
-        self.output_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)/2
-        self.obj2_arr = (two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)/2
-
-        self.spat1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "self"))+self.spat1_arr)/2
-        self.spat2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "self"))+self.spat2_arr)/2
-
+        cycle += 1
         target_node = two_d_softmax(self.output_arr)[0][0]
         cycle += 1
-        # print(target_node)
+
+      print("target_node:{}".format(target_node))
+      print("cycle:{}".format(cycle))
 
       return [target_node, cycle]
 

@@ -32,7 +32,7 @@ class V1(tf.keras.layers.Layer):
       self.kernel = conn.v1_to_spat1
       return matmul_with_rowswap(input,self.kernel)
     elif next_layer == "Obj1":
-      self.kernel == conn.v1_to_obj1
+      self.kernel = conn.v1_to_obj1
       return tf.matmul(input, self.kernel)
 
 #%%

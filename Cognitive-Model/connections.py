@@ -4,7 +4,6 @@ import numpy as np
 #%%
 weights = dict(
     input_to_v1 = 3,
-    v1_to_input = 0,
     v1_to_spat1 = 0.6,
     spat1_to_v1 = 0.4,
     spat1_to_spat2 = 1,
@@ -23,7 +22,7 @@ weights = dict(
     spat2_lateral_inhibit = 1
 )
 
-wt = 0.1
+wt = 0.01
 weights = {k:v*wt for k, v in weights.items()}
 weights
 
