@@ -4,6 +4,7 @@ import numpy as np
 #%%
 weights = dict(
     input_to_v1 = 3,
+    v1_to_input = 0,
     v1_to_spat1 = 0.6,
     spat1_to_v1 = 0.4,
     spat1_to_spat2 = 1,
@@ -29,6 +30,8 @@ weights
 #%%
 input_to_v1 = np.identity(7)
 input_to_v1
+
+v1_to_input = np.transpose(input_to_v1)
 
 #%%
 v1_to_spat1 = np.array([[1,0,0,0,0],
