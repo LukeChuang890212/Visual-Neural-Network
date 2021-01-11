@@ -39,7 +39,7 @@ for trial_type in enumerate([valid_trials, invalid_trials, neutral_trials]):
         print("target")
         print(target)
 
-        model = VisualNetWork()
+        model = VisualNetWork(wt=0.01, cascade_rate=1)
         model(cue, iscue = True)
         record[-1] += model(target,iscue = False)
 

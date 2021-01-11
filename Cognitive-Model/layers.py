@@ -1,7 +1,8 @@
 #%%
 import tensorflow as tf 
-import connections as conn 
 from connections import np
+
+import connections as conn
 
 #%%
 def matmul_with_rowswap(input, kernel):
