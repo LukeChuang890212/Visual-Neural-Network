@@ -169,4 +169,4 @@ class VisualNetWork(tf.keras.Model):
       print("->target_node:{}".format(target_node))
       print("->cycle:{}".format(cycle))
 
-      return [target_node, cycle]
+      return [float(target_node), cycle]

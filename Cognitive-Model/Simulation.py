@@ -1,5 +1,6 @@
 #%%
 from connections import pd, np
+import matplotlib.pyplot as plt
 
 from network import VisualNetWork
 
@@ -62,9 +63,16 @@ for trial_type in enumerate([valid_trials, invalid_trials, neutral_trials]):
 
             record = simulate(target, cue, VisualNetWork, record, not_neutral=False)
         
-        # print("record")
-        # print(pd.DataFrame(record))
-        
+record = pd.DataFrame(record)
+record.columns = ["Trial","Output","Cycle"]
+print("Record")
+print(record)
+
+plt.plot(record["Trial"],record["Cycle"], marker='o')
+# plt.title('title name')
+plt.xlabel('Trial Type')
+plt.ylabel('Number of Cycle')
+plt.show()    
 
 # %%
 # invalid = input_data[input_data["Trial"] == "invalid trial"].drop("Trial", axis = 1)
