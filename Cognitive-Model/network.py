@@ -1,11 +1,8 @@
 #%%
-import layers
-from layers import conn
-
-from layers import tf
-from connections import np
-
+from connections import tf, np
 from random import shuffle
+
+import layers
 
 #%%
 def two_d_softmax(tensor):
@@ -39,7 +36,7 @@ def obj2_to_obj1(self):
   self.obj1_arr = ((two_d_softmax(self.obj2(self.obj2_arr, "Obj1"))+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate)
 
 def spat1_to_obj1(self):
-  self.obj1_arr = ((two_d_softmax(self.spat1(self.spat1_arr, "Obj1"))+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate)
+  self.obj1_arr = ((two_d_softmax(self.spat1(self.spat1_arr, "Obj1"))+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate)-0.5
 def obj1_to_spat1(self):
   self.spat1_arr = ((two_d_softmax(self.obj1(self.obj1_arr, "Spat1"))+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate)
 
@@ -48,7 +45,7 @@ def spat2_to_obj2(self):
 def obj2_to_spat2(self):
   self.spat2_arr = ((two_d_softmax(self.obj2(self.obj2_arr, "Spat2"))+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate)
 
-def obj2_to_output(self):       
+def obj2_to_output(self):   
   self.output_arr = ((two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)
 def output_to_obj2(self):      
   self.obj2_arr = ((two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate)
@@ -60,10 +57,10 @@ def spat2_lateral_inhibit(self):
 
 #%%
 class VisualNetWork(tf.keras.Model):
-  def __init__(self, wt, cascade_rate):
+  def __init__(self, wt, cascade_rate): 
     super(VisualNetWork, self).__init__(name='')
-
-    conn.wt = wt
+    
+    layers.Layers(wt)
 
     self.cascade_rate = cascade_rate
 
@@ -86,36 +83,46 @@ class VisualNetWork(tf.keras.Model):
   def call(self, input_tensor, iscue):
     self.input_tensor = input_tensor
 
-    path_functions = [input_to_v1,
-                          v1_to_spat1,
-                          spat1_to_v1,
-                          spat1_to_spat2,
-                          spat2_to_spat1,
-                          v1_to_obj1,
-                          obj1_to_v1,
-                          obj1_to_obj2,
-                          obj2_to_obj1,
-                          spat1_to_obj1,
-                          obj1_to_spat1,
-                          spat2_to_obj2,
-                          obj2_to_spat2,
-                          obj2_to_output,
-                          output_to_obj2,
-                          spat1_lateral_inhibit,
-                          spat2_lateral_inhibit]
+    path_functions = [input_to_v1, #0
+                          v1_to_spat1, #1
+                          spat1_to_v1, #2
+                          spat1_to_spat2, #3
+                          spat2_to_spat1, #4
+                          v1_to_obj1, #5
+                          obj1_to_v1, #6
+                          obj1_to_obj2, #7
+                          obj2_to_obj1, #8
+                          spat1_to_obj1, #9
+                          obj1_to_spat1, #10
+                          spat2_to_obj2, #11
+                          obj2_to_spat2, #12
+                          obj2_to_output, #13
+                          output_to_obj2, #14
+                          spat1_lateral_inhibit, #15
+                          spat2_lateral_inhibit #16
+                          ] 
+
     if iscue:
       cycle = 0
       while(cycle < 50):
-        shuffle(path_functions)
+        # wanted_paths = [i for i in range(17) if i not in [7,9,11,14]]
+        # wanted_path_functions = list(np.array(path_functions)[wanted_paths])
+        path_functions
 
         for path_f in path_functions:
-          path_f(self)  
+          path_f(self) 
+          # print(path_f,'\n')
+          # print("obj2_arr")
+          # print(self.obj2_arr,'\n')
+          # print("output_arr")
+          # print(self.output_arr,'\n') 
 
-        target_node = self.output_arr[0][0]
+        cue_node = self.output_arr[1][0]
         cycle += 1
-
+        # input("continue")
+        
       print("Cue appear...")
-      print("->target_node:{}".format(target_node))
+      print("->cue_node:{}".format(cue_node))
       print("->cycle:{}".format(cycle),'\n')
     else:  
       cycle = 0
@@ -135,4 +142,3 @@ class VisualNetWork(tf.keras.Model):
       print("->cycle:{}".format(cycle))
 
       return [target_node, cycle]
-

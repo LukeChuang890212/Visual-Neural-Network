@@ -1,4 +1,6 @@
 #%%
+import tensorflow as tf
+import pandas as pd 
 import numpy as np
 
 #%%
@@ -21,84 +23,86 @@ weights = dict(
     spat1_lateral_inhibit = 1,
     spat2_lateral_inhibit = 1
 )
+#%%
+class Connections():
+    def __init__(self, wt):
+        self.wt = wt
+        
+        self.weights = {k:v*self.wt for k, v in weights.items()}
+        self.weights
+#%%
+        self.input_to_v1 = np.identity(7)
+        self.input_to_v1
 
-wt = 0.01
-weights = {k:v*wt for k, v in weights.items()}
-weights
+        self.v1_to_input = np.transpose(self.input_to_v1)
 
 #%%
-input_to_v1 = np.identity(7)
-input_to_v1
+        self.v1_to_spat1 = np.array([[1,0,0,0,0],
+                                [1,1,0,0,0],
+                                [1,1,1,0,0],
+                                [0,1,1,1,0],
+                                [0,0,1,1,1],
+                                [0,0,0,1,1],
+                                [0,0,0,0,1]])*self.weights["v1_to_spat1"]
+        self.v1_to_spat1
 
-v1_to_input = np.transpose(input_to_v1)
-
-#%%
-v1_to_spat1 = np.array([[1,0,0,0,0],
-                        [1,1,0,0,0],
-                        [1,1,1,0,0],
-                        [0,1,1,1,0],
-                        [0,0,1,1,1],
-                        [0,0,0,1,1],
-                        [0,0,0,0,1]])*weights["v1_to_spat1"]
-v1_to_spat1
-
-spat1_to_v1 = np.transpose(v1_to_spat1)*weights["spat1_to_v1"]
+        self.spat1_to_v1 = np.transpose(self.v1_to_spat1)*self.weights["spat1_to_v1"]
 
 #%%
-spat1_to_spat2 = np.array([[1,0,0],
-                        [1,1,0,],
-                        [1,1,1],
-                        [0,1,1],
-                        [0,0,1]])*weights["spat1_to_spat2"]
-spat1_to_spat2
+        self.spat1_to_spat2 = np.array([[1,0,0],
+                                [1,1,0,],
+                                [1,1,1],
+                                [0,1,1],
+                                [0,0,1]])*self.weights["spat1_to_spat2"]
+        self.spat1_to_spat2
 
-spat2_to_spat1 = np.transpose(spat1_to_spat2)*weights["spat2_to_spat1"]
-
-#%%
-v1_to_obj1 = np.array([[1,0,0,0,0],
-                        [1,1,0,0,0],
-                        [1,1,1,0,0],
-                        [0,1,1,1,0],
-                        [0,0,1,1,1],
-                        [0,0,0,1,1],
-                        [0,0,0,0,1]])*weights["v1_to_obj1"]
-v1_to_obj1
-
-obj1_to_v1 = np.transpose(v1_to_obj1)*weights["obj1_to_v1"]
+        self.spat2_to_spat1 = np.transpose(self.spat1_to_spat2)*self.weights["spat2_to_spat1"]
 
 #%%
-obj1_to_obj2 = np.array([[1,0,0],
-                        [1,1,0],
-                        [1,1,1],
-                        [0,1,1],
-                        [0,0,1]])*weights["obj1_to_obj2"]
-obj1_to_obj2
+        self.v1_to_obj1 = np.array([[1,0,0,0,0],
+                                [1,1,0,0,0],
+                                [1,1,1,0,0],
+                                [0,1,1,1,0],
+                                [0,0,1,1,1],
+                                [0,0,0,1,1],
+                                [0,0,0,0,1]])*self.weights["v1_to_obj1"]
+        self.v1_to_obj1
 
-obj2_to_obj1 = np.transpose(obj1_to_obj2)*weights["obj2_to_obj1"]
-
-#%%
-spat1_to_obj1 = np.identity(5)*weights["spat1_to_obj1"]
-spat1_to_obj1
-
-obj1_to_spat1 = np.transpose(spat1_to_obj1)*weights["obj1_to_spat1"]
+        self.obj1_to_v1 = np.transpose(self.v1_to_obj1)*self.weights["obj1_to_v1"]
 
 #%%
-spat2_to_obj2 = np.identity(3)*weights["spat2_to_obj2"]
-spat2_to_obj2
+        self.obj1_to_obj2 = np.array([[1,0,0],
+                                [1,1,0],
+                                [1,1,1],
+                                [0,1,1],
+                                [0,0,1]])*self.weights["obj1_to_obj2"]
+        self.obj1_to_obj2
 
-obj2_to_spat2 = np.transpose(spat2_to_obj2)*weights["obj2_to_spat2"]
+        self.obj2_to_obj1 = np.transpose(self.obj1_to_obj2)*self.weights["obj2_to_obj1"]
 
 #%%
-obj2_to_output = np.ones([3,1])*weights["obj2_to_output"]
-obj2_to_output
+        self.spat1_to_obj1 = np.identity(5)*self.weights["spat1_to_obj1"]
+        self.spat1_to_obj1
 
-output_to_obj2 = np.transpose(obj2_to_output)*weights["output_to_obj2"]
+        self.obj1_to_spat1 = np.transpose(self.spat1_to_obj1)*self.weights["obj1_to_spat1"]
+
+#%%
+        self.spat2_to_obj2 = np.identity(3)*self.weights["spat2_to_obj2"]
+        self.spat2_to_obj2
+
+        self.obj2_to_spat2 = np.transpose(self.spat2_to_obj2)*self.weights["obj2_to_spat2"]
+
+#%%
+        self.obj2_to_output = np.ones([3,1])*self.weights["obj2_to_output"]
+        self.obj2_to_output
+
+        self.output_to_obj2 = np.transpose(self.obj2_to_output)*self.weights["output_to_obj2"]
 
 #Lateral Inhibition
-#%%
-spat1_lateral_inhibit = (np.identity(5)*2-np.ones(5))*weights["spat1_lateral_inhibit"]
-spat1_lateral_inhibit
+ #%%
+        self.spat1_lateral_inhibit = (np.identity(5)*2-np.ones(5))*self.weights["spat1_lateral_inhibit"]
+        self.spat1_lateral_inhibit
 
 #%%
-spat2_lateral_inhibit = (np.identity(3)*2-np.ones(3))*weights["spat1_lateral_inhibit"]
-spat2_lateral_inhibit
+        self.spat2_lateral_inhibit = (np.identity(3)*2-np.ones(3))*self.weights["spat1_lateral_inhibit"]
+        self.spat2_lateral_inhibit
