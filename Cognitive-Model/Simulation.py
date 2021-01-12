@@ -18,6 +18,24 @@ neutral_trials = np.array_split(neutral_trials,len(neutral_trials)/2)
 # print(neutral_trials)
 
 #%%
+def simulate(target, cue, VisualNetWork, record, not_neutral):
+    print("-----------------")
+    print("Trial type: {}".format(record[-1][0]),'\n')
+    print("Cue:")
+    print(cue,'\n')
+    print("Target:")
+    print(target,'\n')
+
+    print("Result:",'\n')
+    model = VisualNetWork(wt=1, cascade_rate=0.987985)
+    if(not_neutral):
+        model(cue, iscue = True)
+    record[-1] += model(target,iscue = False)
+    print("-----------------")
+
+    return record
+
+#%%
 record = []
 for trial_type in enumerate([valid_trials, invalid_trials, neutral_trials]):
     for trial in trial_type[1]:
@@ -31,18 +49,16 @@ for trial_type in enumerate([valid_trials, invalid_trials, neutral_trials]):
                 record.append(["valid"])
             elif trial_type[0] == 1:
                 record.append(["invalid"])
+            
+            record = simulate(target, cue, VisualNetWork, record, not_neutral=True)
         else:
             target = trial
             record.append(["neutral"])
-        print("cue")
-        print(cue)
-        print("target")
-        print(target)
 
-        model = VisualNetWork(wt=0.01, cascade_rate=1)
-        model(cue, iscue = True)
-        record[-1] += model(target,iscue = False)
-
+            record = simulate(target, cue, VisualNetWork, record, not_neutral=False)
+        
         # print("record")
         # print(pd.DataFrame(record))
         
+
+# %%
