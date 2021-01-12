@@ -6,9 +6,11 @@ from network import VisualNetWork
 #%%
 input_data = pd.read_excel("input 2.xlsx")
 
-valid_trials = input_data[input_data["Trial"] == "valid"].drop("Trial", axis = 1).to_numpy().astype(int)
-invalid_trials = input_data[input_data["Trial"] == "invalid"].drop("Trial", axis = 1).to_numpy().astype(int)
-neutral_trials = input_data[input_data["Trial"] == "neutral"].drop("Trial", axis = 1).to_numpy().astype(int)
+salience = 100.0
+
+valid_trials = input_data[input_data["Trial"] == "valid"].drop("Trial", axis = 1).to_numpy()*salience
+invalid_trials = input_data[input_data["Trial"] == "invalid"].drop("Trial", axis = 1).to_numpy()*salience
+neutral_trials = input_data[input_data["Trial"] == "neutral"].drop("Trial", axis = 1).to_numpy()*salience
 
 # print(len(valid_trials))
 # print(len(invalid_trials))
@@ -33,7 +35,7 @@ def simulate(target, cue, VisualNetWork, record, not_neutral):
     print(target,'\n')
 
     print("Result:",'\n')
-    model = VisualNetWork(wt=0.01, cascade_rate=0.987985) #0.987985
+    model = VisualNetWork(wt=0.01, cascade_rate=0.85) #0.987985
     if(not_neutral):
         model(cue, iscue = True)
     record[-1] += model(target,iscue = False)

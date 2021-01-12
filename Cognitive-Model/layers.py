@@ -18,6 +18,7 @@ class Layers():
   def __init__(self, wt):
     Layers.conn = Connections(wt)
 
+
 #%%
 class InputLayer(tf.keras.layers.Layer, Layers):
   def __init__(self):
@@ -25,6 +26,9 @@ class InputLayer(tf.keras.layers.Layer, Layers):
         
   def call(self, input):
       self.kernel = Layers.conn.input_to_v1
+      # print(input)
+      # print(self.kernel)
+      # print(tf.matmul(input, self.kernel))
       return tf.matmul(input, self.kernel)
 
 #%%

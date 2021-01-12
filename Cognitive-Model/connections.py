@@ -30,11 +30,10 @@ class Connections():
         
         self.weights = {k:v*self.wt for k, v in weights.items()}
         self.weights
-#%%
-        self.input_to_v1 = np.identity(7)
-        self.input_to_v1
 
-        self.v1_to_input = np.transpose(self.input_to_v1)
+#%%
+        self.input_to_v1 = np.identity(7)*self.weights["input_to_v1"]
+        self.input_to_v1
 
 #%%
         self.v1_to_spat1 = np.array([[1,0,0,0,0],
