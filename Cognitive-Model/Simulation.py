@@ -35,7 +35,7 @@ def simulate(target, cue, VisualNetWork, record, not_neutral):
     print(target,'\n')
 
     print("Result:",'\n')
-    model = VisualNetWork(wt=0.15, cascade_rate=0.8) #0.987985
+    model = VisualNetWork(wt=0.11, cascade_rate=0.8) #0.987985
     if(not_neutral):
         model(cue, iscue = True)
     record[-1] += model(target,iscue = False)
