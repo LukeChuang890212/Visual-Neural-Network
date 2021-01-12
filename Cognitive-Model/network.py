@@ -12,6 +12,13 @@ def two_d_softmax(tensor):
   arr = tf.nn.softmax(one_d_arr.astype(float)).numpy().reshape(list(shape))
   return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
 
+def two_d_sigmoid(tensor):
+  two_d_arr = tensor.numpy() 
+  shape = two_d_arr.shape
+  one_d_arr = two_d_arr.flatten()
+  arr = tf.nn.sigmoid(one_d_arr.astype(float)).numpy().reshape(list(shape))
+  return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
+
 def input_to_v1(self):
   self.v1_arr = ((two_d_softmax(self.input_layer(self.input_tensor))+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate)
   # self.v1_arr = (self.input_layer(self.input_tensor)+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate
@@ -60,17 +67,17 @@ def obj2_to_spat2(self):
 
 def obj2_to_output(self):   
   # self.output_arr = ((two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)-0.05
-  self.output_arr = ((self.obj2(self.obj2_arr, "Output")+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)-0.05
+  self.output_arr = ((self.obj2(self.obj2_arr, "Output")+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)-0.5
 def output_to_obj2(self):      
   # self.obj2_arr = (two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate
   self.obj2_arr = (self.output_layer(self.output_arr)+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate 
 
 def spat1_lateral_inhibit(self):
   # self.spat1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "self"))+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-  self.spat1_arr = ((self.spat1(self.spat1_arr, "self")+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate)-10
+  self.spat1_arr = ((self.spat1(self.spat1_arr, "self")+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate)
 def spat2_lateral_inhibit(self):
   # self.spat2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "self"))+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate
-  self.spat2_arr = ((self.spat2(self.spat2_arr, "self")+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate)-10
+  self.spat2_arr = ((self.spat2(self.spat2_arr, "self")+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate)
 
 #%%
 class VisualNetWork(tf.keras.Model):
@@ -139,6 +146,8 @@ class VisualNetWork(tf.keras.Model):
         # input("continue")
         
       print("Cue appear...")
+      print("output_arr")
+      print(self.output_arr,'\n') 
       print("->cue_node:{}".format(cue_node))
       print("->cycle:{}".format(cycle),'\n')
     else:  
@@ -155,6 +164,8 @@ class VisualNetWork(tf.keras.Model):
         cycle += 1
 
       print("Target appear...")
+      print("output_arr")
+      print(self.output_arr,'\n') 
       print("->target_node:{}".format(target_node))
       print("->cycle:{}".format(cycle))
 
