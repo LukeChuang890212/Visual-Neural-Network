@@ -4,6 +4,7 @@ from random import shuffle
 
 import layers
 
+# 調整每一種層和層之間訊息傳遞的運算方式
 #%%
 def two_d_softmax(tensor):
   two_d_arr = tensor.numpy() 
@@ -18,6 +19,11 @@ def two_d_sigmoid(tensor):
   one_d_arr = two_d_arr.flatten()
   arr = tf.nn.sigmoid(one_d_arr.astype(float)).numpy().reshape(list(shape))
   return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
+
+# 調整每一種層和層之間訊息傳遞的運算方式
+#%%
+# 調整bias的地方
+bias = -0.5 # currently, used only in obj2_to_output
 
 def input_to_v1(self):
   self.v1_arr = ((two_d_softmax(self.input_layer(self.input_tensor))+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate)
@@ -67,7 +73,7 @@ def obj2_to_spat2(self):
 
 def obj2_to_output(self):   
   # self.output_arr = ((two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)-0.05
-  self.output_arr = ((self.obj2(self.obj2_arr, "Output")+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)-0.5
+  self.output_arr = ((self.obj2(self.obj2_arr, "Output")+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)+bias
 def output_to_obj2(self):      
   # self.obj2_arr = (two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate
   self.obj2_arr = (self.output_layer(self.output_arr)+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate 
@@ -107,6 +113,7 @@ class VisualNetWork(tf.keras.Model):
   def call(self, input_tensor, iscue):
     self.input_tensor = input_tensor
 
+    # 調整哪些layer之間有連結，可以直接刪掉以切斷連結
     path_functions = [input_to_v1, #0
                           v1_to_spat1, #1
                           spat1_to_v1, #2
@@ -129,12 +136,15 @@ class VisualNetWork(tf.keras.Model):
     if iscue:
       cycle = 0
       while(cycle < 100):
+        # Ignore below (for testing) 
         # wanted_paths = [i for i in range(17) if i not in [7,9,11,14]]
         # wanted_path_functions = list(np.array(path_functions)[wanted_paths])
+
         shuffle(path_functions)
 
         for path_f in path_functions:
-          path_f(self) 
+          path_f(self)
+          # Ignore below (for testing) 
           # print(path_f,'\n')
           # print("obj2_arr")
           # print(self.obj2_arr,'\n')
@@ -143,7 +153,6 @@ class VisualNetWork(tf.keras.Model):
 
         cue_node = self.output_arr[1][0]
         cycle += 1
-        # input("continue")
         
       print("Cue appear...")
       print("output_arr")

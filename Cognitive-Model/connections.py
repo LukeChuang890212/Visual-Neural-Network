@@ -3,6 +3,7 @@ import tensorflow as tf
 import pandas as pd 
 import numpy as np
 
+# 調整weights相對大小
 #%%
 weights = dict(
     input_to_v1 = 3,
@@ -23,6 +24,8 @@ weights = dict(
     spat1_lateral_inhibit = 1,
     spat2_lateral_inhibit = 1
 )
+
+# 調整各layer之node數目、形狀(?x?)、和各layer間的連結方式
 #%%
 class Connections():
     def __init__(self, wt):

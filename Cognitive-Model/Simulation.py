@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from network import VisualNetWork
 
+# 讀input資料
 #%%
 input_data = pd.read_excel("input 2.xlsx")
 
@@ -36,7 +37,8 @@ def simulate(target, cue, VisualNetWork, record, not_neutral):
     print(target,'\n')
 
     print("Result:",'\n')
-    model = VisualNetWork(wt=0.11, cascade_rate=0.8) #0.987985
+    # 調weight(wt)和cascade_rate的地方
+    model = VisualNetWork(wt=0.11, cascade_rate=0.8) # 正常人 wt=0.11, cascade_rate=0.8
     if(not_neutral):
         model(cue, iscue = True)
     record[-1] += model(target,iscue = False)
@@ -73,6 +75,8 @@ plt.plot(record["Trial"],record["Cycle"], marker='o')
 plt.xlabel('Trial Type')
 plt.ylabel('Number of Cycle')
 plt.show()    
+
+
 
 # %%
 # invalid = input_data[input_data["Trial"] == "invalid trial"].drop("Trial", axis = 1)
