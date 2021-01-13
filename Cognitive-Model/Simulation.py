@@ -28,7 +28,7 @@ neutral_trials = np.array_split(neutral_trials,len(neutral_trials)/2)
 
 #%%
 def simulate(target, cue, VisualNetWork, record, not_neutral):
-    print("-----------------")
+    print("----------------------------------------------------")
     print("Trial type: {}".format(record[-1][0]),'\n')
     if(not_neutral):
         print("Cue:")
@@ -38,11 +38,11 @@ def simulate(target, cue, VisualNetWork, record, not_neutral):
 
     print("Result:",'\n')
     # 調weight(wt)和cascade_rate的地方
-    model = VisualNetWork(wt=0.11, cascade_rate=0.8) # 正常人 wt=0.11, cascade_rate=0.8
+    model = VisualNetWork(wt=0.11, cascade_rate=0.8, bias=-0.5) # 正常人 wt=0.11, cascade_rate=0.8, bias=-0.5
     if(not_neutral):
         model(cue, iscue = True)
     record[-1] += model(target,iscue = False)
-    print("-----------------")
+    print("----------------------------------------------------")
 
     return record
 

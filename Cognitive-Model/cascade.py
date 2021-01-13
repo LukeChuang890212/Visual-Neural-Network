@@ -84,3 +84,10 @@ class Cascade():
     def spat2_lateral_inhibit(self,classname):
         # classname.spat2_arr = (self.two_d_softmax(classname.spat2(classname.spat2_arr, "classname"))+classname.spat2_arr)*(1-classname.cascade_rate)+classname.spat2_arr*classname.cascade_rate
         classname.spat2_arr = ((classname.spat2(classname.spat2_arr, "self")+classname.spat2_arr)*(1-classname.cascade_rate)+classname.spat2_arr*classname.cascade_rate)
+    def set_zero(self,classname):
+        classname.obj1_arr = tf.Variable(classname.obj1_arr)[0].assign([0,0,0,0,0])
+        classname.obj2_arr = tf.Variable(classname.obj2_arr)[0].assign([0,0,0])
+        classname.output_arr = tf.Variable(classname.output_arr)[0].assign([0])
+        # classname.obj1_arr = tf.Variable(classname.obj1_arr)[0].assign([0,0,0,0,0])
+        # classname.obj2_arr = tf.Variable(classname.obj2_arr)[0].assign([0,0,0])
+        # classname.output_arr = tf.Variable(classname.output_arr)[0].assign([0])

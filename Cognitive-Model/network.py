@@ -4,98 +4,18 @@ from random import shuffle
 
 import layers
 from cascade import Cascade
-
-# # 調整每一種層和層之間訊息傳遞的運算方式
-# #%%
-# def two_d_softmax(tensor):
-#   two_d_arr = tensor.numpy() 
-#   shape = two_d_arr.shape
-#   one_d_arr = two_d_arr.flatten()
-#   arr = tf.nn.softmax(one_d_arr.astype(float)).numpy().reshape(list(shape))
-#   return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
-
-# def two_d_sigmoid(tensor):
-#   two_d_arr = tensor.numpy() 
-#   shape = two_d_arr.shape
-#   one_d_arr = two_d_arr.flatten()
-#   arr = tf.nn.sigmoid(one_d_arr.astype(float)).numpy().reshape(list(shape))
-#   return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
-
-# # 調整每一種層和層之間訊息傳遞的運算方式
-# #%%
-# # 調整bias的地方
-# bias = -0.5 # currently, used only in obj2_to_output
-
-# def input_to_v1(self):
-#   self.v1_arr = ((two_d_softmax(self.input_layer(self.input_tensor))+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate)
-#   # self.v1_arr = (self.input_layer(self.input_tensor)+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate
-
-# def v1_to_spat1(self):
-#   # self.spat1_arr = ((two_d_softmax(self.v1(self.v1_arr, "Spat1"))+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate)
-#   self.spat1_arr = (self.v1(self.v1_arr, "Spat1")+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-# def spat1_to_v1(self):
-#   self.v1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "V1"))+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate
-#   # self.v1_arr = (self.spat1(self.spat1_arr, "V1")+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate
-
-# def spat1_to_spat2(self):  
-#   # self.spat2_arr = ((two_d_softmax(self.spat1(self.spat1_arr, "Spat2"))+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate)
-#   self.spat2_arr = (self.spat1(self.spat1_arr, "Spat2")+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate
-# def spat2_to_spat1(self):
-#   self.spat1_arr = (two_d_softmax(self.spat2(self.spat2_arr, "Spat1"))+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-#   # self.spat1_arr = (self.spat2(self.spat2_arr, "Spat1")+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-
-# def v1_to_obj1(self):
-#   self.obj1_arr = ((two_d_softmax(self.v1(self.v1_arr, "Obj1"))+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate)
-#   # self.obj1_arr = (self.v1(self.v1_arr, "Obj1")+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate
-# def obj1_to_v1(self):
-#   # self.v1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "V1"))+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate
-#   self.v1_arr = (self.obj1(self.obj1_arr, "V1")+self.v1_arr)*(1-self.cascade_rate)+self.v1_arr*self.cascade_rate
-
-# def obj1_to_obj2(self):   
-#   self.obj2_arr = ((two_d_softmax(self.obj1(self.obj1_arr, "Obj2"))+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate)
-#   # self.obj2_arr = (self.obj1(self.obj1_arr, "Obj2")+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate
-# def obj2_to_obj1(self):
-#   # self.obj1_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Obj1"))+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate
-#   self.obj1_arr = (self.obj2(self.obj2_arr, "Obj1")+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate
-
-# def spat1_to_obj1(self):
-#   self.obj1_arr = ((two_d_softmax(self.spat1(self.spat1_arr, "Obj1"))+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate)
-#   # self.obj1_arr = (self.spat1(self.spat1_arr, "Obj1")+self.obj1_arr)*(1-self.cascade_rate)+self.obj1_arr*self.cascade_rate
-# def obj1_to_spat1(self):
-#   # self.spat1_arr = (two_d_softmax(self.obj1(self.obj1_arr, "Spat1"))+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-#   self.spat1_arr = (self.obj1(self.obj1_arr, "Spat1")+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-
-# def spat2_to_obj2(self):
-#   self.obj2_arr = ((two_d_softmax(self.spat2(self.spat2_arr, "Obj2"))+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate)
-#   # self.obj2_arr = (self.spat2(self.spat2_arr, "Obj2")+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate
-# def obj2_to_spat2(self):
-#   # self.spat2_arr = (two_d_softmax(self.obj2(self.obj2_arr, "Spat2"))+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate
-#   self.spat2_arr = (self.obj2(self.obj2_arr, "Spat2")+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate
-
-# def obj2_to_output(self):   
-#   # self.output_arr = ((two_d_softmax(self.obj2(self.obj2_arr, "Output"))+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)-0.05
-#   self.output_arr = ((self.obj2(self.obj2_arr, "Output")+self.output_arr)*(1-self.cascade_rate)+self.output_arr*self.cascade_rate)+bias
-# def output_to_obj2(self):      
-#   # self.obj2_arr = (two_d_softmax(self.output_layer(self.output_arr))+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate
-#   self.obj2_arr = (self.output_layer(self.output_arr)+self.obj2_arr)*(1-self.cascade_rate)+self.obj2_arr*self.cascade_rate 
-
-# def spat1_lateral_inhibit(self):
-#   # self.spat1_arr = (two_d_softmax(self.spat1(self.spat1_arr, "self"))+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate
-#   self.spat1_arr = ((self.spat1(self.spat1_arr, "self")+self.spat1_arr)*(1-self.cascade_rate)+self.spat1_arr*self.cascade_rate)
-# def spat2_lateral_inhibit(self):
-#   # self.spat2_arr = (two_d_softmax(self.spat2(self.spat2_arr, "self"))+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate
-#   self.spat2_arr = ((self.spat2(self.spat2_arr, "self")+self.spat2_arr)*(1-self.cascade_rate)+self.spat2_arr*self.cascade_rate)
+from plotter import Plotter
 
 #%%
 class VisualNetWork(tf.keras.Model, Cascade):
-  def __init__(self, wt, cascade_rate): 
+  def __init__(self, wt, cascade_rate, bias): 
     super(VisualNetWork, self).__init__(name='')
     
-    layers.Layers(wt)
+    layers.Layers(wt) # set weight
+    self.cascade_rate = cascade_rate # set cascade_rate
+    self.cascade = Cascade(bias) # set bias
+    self.plotter = Plotter()
 
-    self.cascade_rate = cascade_rate
-
-    self.cascade = Cascade(-0.5)
 
     self.input_layer = layers.InputLayer()
     self.v1 = layers.V1()
@@ -133,39 +53,44 @@ class VisualNetWork(tf.keras.Model, Cascade):
                           self.cascade.obj2_to_output, #13
                           self.cascade.output_to_obj2, #14
                           self.cascade.spat1_lateral_inhibit, #15
-                          self.cascade.spat2_lateral_inhibit #16
+                          self.cascade.spat2_lateral_inhibit, #16
+                          self.set_zero #17
                           ] 
 
     if iscue:
+       # 挑掉不要的paths
+      unwanted = [17] # 將不要的路徑編號填入此 (編號請查詢上方)
+      wanted_paths = [i for i in range(17) if i not in unwanted]
+      path_functions = list(np.array(path_functions)[wanted_paths])
+
       cycle = 0
       # 調整cue的cycle數
       cue_cycle_num = 100
       while(cycle < cue_cycle_num):
-        # 挑掉不要的paths
-        unwanted = [] # 將不要的路徑編號填入此 (編號請查詢上方)
-        wanted_paths = [i for i in range(17) if i not in unwanted]
-        path_functions = list(np.array(path_functions)[wanted_paths])
-
         shuffle(path_functions)
 
         for path_f in path_functions:
-          path_f(self, )
-          # Ignore below (for testing) 
-          # print(path_f,'\n')
-          # print("obj2_arr")
-          # print(self.obj2_arr,'\n')
-          # print("output_arr")
-          # print(self.output_arr,'\n') 
+          path_f(self)
+
+        # if cycle %20 == 19:
+        #   print("cycle:{}".format(cycle),'\n')
+        #   self.plotter.set_arrs(self.input_arr,self.v1_arr,self.spat1_arr,self.spat2_arr,self.obj1_arr,self.obj2_arr,self.output_arr)
+        #   self.plotter.plot()
 
         cue_node = self.output_arr[1][0]
         cycle += 1
         
-      print("Cue appear...")
-      print("output_arr")
+      print("Cue appear...",'\n')
+      print("output")
       print(self.output_arr,'\n') 
       print("->cue_node:{}".format(cue_node))
       print("->cycle:{}".format(cycle),'\n')
-    else:  
+    else: 
+      # 挑掉不要的paths
+      unwanted = [17] # 將不要的路徑編號填入此 (編號請查詢上方)
+      wanted_paths = [i for i in range(17) if i not in unwanted]
+      path_functions = list(np.array(path_functions)[wanted_paths])
+
       cycle = 0
       target_node = self.output_arr[0][0]
       while(float(target_node) < 0.6):
@@ -174,12 +99,16 @@ class VisualNetWork(tf.keras.Model, Cascade):
         for path_f in path_functions:
           path_f(self)  
 
-        
+        if cycle %20 == 19:
+          print("cycle:{}".format(cycle),'\n')
+          self.plotter.set_arrs(self.input_arr,self.v1_arr,self.spat1_arr,self.spat2_arr,self.obj1_arr,self.obj2_arr,self.output_arr)
+          self.plotter.plot()
+
         target_node = self.output_arr[0][0]
         cycle += 1
 
-      print("Target appear...")
-      print("output_arr")
+      print("Target appear...",'\n')
+      print("output")
       print(self.output_arr,'\n') 
       print("->target_node:{}".format(target_node))
       print("->cycle:{}".format(cycle))

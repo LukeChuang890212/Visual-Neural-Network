@@ -102,9 +102,15 @@ class Connections():
 
 #Lateral Inhibition
  #%%
-        self.spat1_lateral_inhibit = (np.identity(5)*2-np.ones(5))*self.weights["spat1_lateral_inhibit"]
+        self.spat1_lateral_inhibit = np.array([[0,-0.2,-0.5,-1,-2],
+                                                [-0.2,0,-0.2,-0.5,-1],
+                                                [-0.5,-0.2,0,-0.2,-0.5],
+                                                [-1,-0.5,-0.2,0,-0.2],
+                                                [-2,-1,-0.5,-0.2,0]])
         self.spat1_lateral_inhibit
 
 #%%
-        self.spat2_lateral_inhibit = (np.identity(3)*2-np.ones(3))*self.weights["spat1_lateral_inhibit"]
+        self.spat2_lateral_inhibit = np.array([[0,-0.2,-0.5],
+                                                [-0.2,0,-0.2],
+                                                [-0.5,-0.2,0]])
         self.spat2_lateral_inhibit
