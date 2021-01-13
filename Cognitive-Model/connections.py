@@ -25,7 +25,7 @@ weights = dict(
     spat2_lateral_inhibit = 1
 )
 
-# 調整各layer之node數目、形狀(?x?)、和各layer間的連結方式
+# 調整各layer之node數目、形狀(?x?)、和各layer間的連結方式 
 #%%
 class Connections():
     def __init__(self, wt):

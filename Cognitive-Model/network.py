@@ -135,10 +135,13 @@ class VisualNetWork(tf.keras.Model):
 
     if iscue:
       cycle = 0
-      while(cycle < 100):
-        # Ignore below (for testing) 
-        # wanted_paths = [i for i in range(17) if i not in [7,9,11,14]]
-        # wanted_path_functions = list(np.array(path_functions)[wanted_paths])
+      # 調整cue的cycle數
+      cue_cycle_num = 100
+      while(cycle < cue_cycle_num):
+        # 挑掉不要的paths
+        unwanted = [] # 將不要的路徑編號填入此 (編號請查詢上方)
+        wanted_paths = [i for i in range(17) if i not in unwanted]
+        path_functions = list(np.array(path_functions)[wanted_paths])
 
         shuffle(path_functions)
 
