@@ -1,7 +1,3 @@
-#%%
-from connections import tf, np
-from random import shuffle
-
 import layers
 from cascade import Cascade
 from plotter import Plotter
@@ -119,23 +115,3 @@ class VisualNetWork(tf.keras.Model, Cascade):
       print("->cycle:{}".format(cycle))
 
       return [float(target_node), cycle]
-
-#%%
-# import numpy as np
-# import tensorflow as tf 
-
-# def two_d_softmax(tensor):
-#         two_d_arr = tensor.numpy() 
-#         shape = two_d_arr.shape
-#         one_d_arr = two_d_arr.flatten()
-#         arr = tf.nn.softmax(one_d_arr.astype(float)).numpy().reshape(list(shape))
-#         return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
-
-# def two_d_sigmoid(tensor):
-#     two_d_arr = tensor.numpy() 
-#     shape = two_d_arr.shape
-#     one_d_arr = two_d_arr.flatten()
-#     arr = tf.nn.sigmoid(one_d_arr.astype(float)).numpy().reshape(list(shape))
-#     return tf.convert_to_tensor(arr,dtype=tf.dtypes.float32)
-
-# two_d_sigmoid(tf.convert_to_tensor(np.array([[-1,10000000,1],[1,1,1]])))
