@@ -10,7 +10,7 @@ class Sim():
         #%% 
         input_data = pd.read_excel("input_data/input 2.xlsx")
 
-        salience = 100.0
+        salience = 1.0
 
         self.valid_trials = input_data[input_data["Trial"] == "valid"].drop("Trial", axis = 1).to_numpy()*salience
         self.invalid_trials = input_data[input_data["Trial"] == "invalid"].drop("Trial", axis = 1).to_numpy()*salience
@@ -40,10 +40,10 @@ class Sim():
 
         print("Result:",'\n')
         # 調weight(wt)和cascade_rate的地方
-        model = VisualNetWork(wt=0.2, cascade_rate=0.9, bias=-0.3) # 正常人 wt=0.11, cascade_rate=0.8, bias=-0.5
+        network = VisualNetWork(wt=0.25, cascade_rate=0.1, bias=0.1) # 正常人 wt=0.11, cascade_rate=0.8, bias=-0.5
         if(not_neutral):
-            model(cue, iscue = True)
-        record[-1] += model(target,iscue = False)
+            network(cue, iscue = True)
+        record[-1] += network(target,iscue = False)
         print("----------------------------------------------------")
 
         return record
@@ -58,7 +58,7 @@ class Sim():
 
                     if trial_type[0] == 0:
                         record.append(["valid"])
-                    elif trial_type[0] == 1:
+                    elif   trial_type[0] == 1:
                         record.append(["invalid"])
                     
                     record = self.simulate(target, cue, VisualNetWork, record, not_neutral=True)
@@ -80,23 +80,9 @@ class Sim():
         plt.show()    
 
 #%%
+sim = Sim()
+
 def main():
-    sim = Sim()
     sim.run()
 
 main()
-# %%
-# invalid = input_data[input_data["Trial"] == "invalid trial"].drop("Trial", axis = 1)
-# all_zero_time = 0
-# pattern = []
-# for i in range(0,len(invalid),4):
-#     for j in range(i,i+4):
-#         pattern.append(int(np.array_equal(invalid.iloc[j,:],np.zeros(7))))
-#         print(int(np.array_equal(invalid.iloc[j,:],np.zeros(7))))
-#     if(int(np.array_equal(a,[1,0,0,1])) == 0):
-#         print("i:",i)
-#         break
-#     else:
-#         pattern = []
-
-# invalid.iloc[i:i+4,:]

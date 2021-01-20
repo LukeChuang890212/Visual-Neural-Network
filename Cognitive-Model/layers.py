@@ -42,7 +42,7 @@ class V1(tf.keras.layers.Layer, Layers):
       return matmul_with_rowswap(input,self.kernel)
     elif next_layer == "Obj1":
       self.kernel = Layers.conn.v1_to_obj1
-      return tf.matmul(input, self.kernel)
+      return matmul_with_rowswap(input, self.kernel)
 
 #%%
 class Spat1(tf.keras.layers.Layer, Layers):
@@ -58,10 +58,10 @@ class Spat1(tf.keras.layers.Layer, Layers):
       return matmul_with_rowswap(input,self.kernel)
     elif next_layer == "Obj1":
       self.kernel = Layers.conn.spat1_to_obj1
-      return matmul_with_rowswap(input,self.kernel)
+      return tf.matmul(input,self.kernel)
     elif next_layer == "self":
-      self.kernel = Layers.conn.spat1_lateral_inhibit
-      return tf.matmul(input, self.kernel)
+      self.kernel = Layers.conn.spat1_lateral
+      return matmul_with_rowswap(input, self.kernel)
 
     #%%
 class Spat2(tf.keras.layers.Layer, Layers):
@@ -71,13 +71,13 @@ class Spat2(tf.keras.layers.Layer, Layers):
   def call(self, input, next_layer):
     if next_layer == "Obj2":
       self.kernel = Layers.conn.spat2_to_obj2
-      return matmul_with_rowswap(input,self.kernel)
+      return tf.matmul(input,self.kernel)
     elif next_layer == "Spat1":
       self.kernel = Layers.conn.spat2_to_spat1
       return matmul_with_rowswap(input,self.kernel)
     elif next_layer == "self":
-      self.kernel = Layers.conn.spat2_lateral_inhibit
-      return tf.matmul(input, self.kernel)
+      self.kernel = Layers.conn.spat2_lateral
+      return matmul_with_rowswap(input, self.kernel)
 
     #%%
 class Obj1(tf.keras.layers.Layer, Layers):
@@ -87,13 +87,13 @@ class Obj1(tf.keras.layers.Layer, Layers):
   def call(self, input, next_layer):
     if next_layer == "Obj2":
       self.kernel = Layers.conn.obj1_to_obj2
-      return tf.matmul(input, self.kernel)
+      return matmul_with_rowswap(input, self.kernel)
     elif next_layer == "V1":
       self.kernel = Layers.conn.obj1_to_v1
-      return tf.matmul(input, self.kernel)
+      return matmul_with_rowswap(input, self.kernel)
     elif next_layer == "Spat1":
       self.kernel = Layers.conn.obj1_to_spat1
-      return matmul_with_rowswap(input,self.kernel)
+      return tf.matmul(input,self.kernel)
 
 #%%
 class Obj2(tf.keras.layers.Layer, Layers):
@@ -103,13 +103,13 @@ class Obj2(tf.keras.layers.Layer, Layers):
   def call(self, input, next_layer):
     if next_layer == "Output":
       self.kernel = Layers.conn.obj2_to_output
-      return tf.matmul(input, self.kernel)
+      return matmul_with_rowswap(input, self.kernel)
     elif next_layer == "Spat2":
       self.kernel = Layers.conn.obj2_to_spat2
-      return matmul_with_rowswap(input,self.kernel)
+      return tf.matmul(input,self.kernel)
     elif next_layer == "Obj1":
       self.kernel = Layers.conn.obj2_to_obj1
-      return tf.matmul(input, self.kernel)
+      return matmul_with_rowswap(input, self.kernel)
 
 #%%
 class OutputLayer(tf.keras.layers.Layer, Layers):
@@ -118,4 +118,4 @@ class OutputLayer(tf.keras.layers.Layer, Layers):
 
   def call(self, input):
     self.kernel = Layers.conn.output_to_obj2
-    return tf.matmul(input, self.kernel)
+    return matmul_with_rowswap(input, self.kernel)

@@ -33,12 +33,52 @@ class VisualNetWork(tf.keras.Model, Cascade):
     self.obj2_arr = tf.Variable(tf.zeros([2,3],dtype=tf.dtypes.float32))
     self.output_arr = tf.Variable(tf.zeros([2,1],dtype=tf.dtypes.float32))
   
+  def run_cycle(self,iscue,unwanted):
+    # 挑掉不要的paths
+    unwanted = [17,18] # 將不要的路徑編號填入此 (編號請查詢上方)
+    wanted_paths = [i for i in range(len(self.path_functions)) if i not in unwanted]
+    self.path_functions = list(np.array(self.path_functions)[wanted_paths])
+
+    # 調整cue和target的cycle數
+    if iscue:
+      cycle_num = 100
+      threshold = 1
+      node_index = 1
+    else:
+      cycle_num = 220
+      threshold = 0.6
+      node_index = 0 
+      
+    cycle = 0
+    node = self.output_arr[node_index][0]
+    while(cycle < cycle_num and node < threshold):
+      shuffle(self.path_functions)
+      for path_f in self.path_functions:
+        path_f(self)
+
+      node = self.output_arr[node_index][0]
+      cycle += 1
+
+      if cycle % 20 == 0:
+        print("cycle:{}".format(cycle),'\n')
+        self.plotter.set_arrs(self.input_arr,self.v1_arr,self.spat1_arr,self.spat2_arr,self.obj1_arr,self.obj2_arr,self.output_arr)
+        self.plotter.plot()
+      
+    print("output")
+    print(self.output_arr,'\n')
+    print("->cycle:{}".format(cycle)) 
+    if iscue:
+      print("->cue_node:{}".format(node),'\n')
+    else:
+      print("->target_node:{}".format(node),'\n')
+      return [float(node), cycle]
+
   def call(self, input_tensor, iscue):
     self.input_arr = input_tensor
     self.input_tensor = input_tensor
 
     # 調整哪些layer之間有連結，可以直接刪掉以切斷連結
-    path_functions = [self.cascade.input_to_v1, #0
+    self.path_functions = [self.cascade.input_to_v1, #0
                           self.cascade.v1_to_spat1, #1
                           self.cascade.spat1_to_v1, #2
                           self.cascade.spat1_to_spat2, #3
@@ -53,72 +93,18 @@ class VisualNetWork(tf.keras.Model, Cascade):
                           self.cascade.obj2_to_spat2, #12
                           self.cascade.obj2_to_output, #13
                           self.cascade.output_to_obj2, #14
-                          self.cascade.spat1_lateral_inhibit, #15
-                          self.cascade.spat2_lateral_inhibit, #16
+                          self.cascade.spat1_lateral, #15
+                          self.cascade.spat2_lateral, #16
                           self.cascade.reset_target_zero, #17
                           self.cascade.reset_cue_zero #18
                           ] 
 
     if iscue:
       print("Cue appear...",'\n')
-
-       # 挑掉不要的paths
-      unwanted = [18] # 將不要的路徑編號填入此 (編號請查詢上方)
-      wanted_paths = [i for i in range(len(path_functions)) if i not in unwanted]
-      path_functions = list(np.array(path_functions)[wanted_paths])
-
-      cycle = 0
-      # 調整cue的cycle數
-      cue_cycle_num = 100
-      while(cycle < cue_cycle_num):
-        shuffle(path_functions)
-
-        for path_f in path_functions:
-          path_f(self)
-
-        cue_node = self.output_arr[1][0]
-        cycle += 1
-
-        if cycle % 20 == 0:
-          print("cycle:{}".format(cycle),'\n')
-          self.plotter.set_arrs(self.input_arr,self.v1_arr,self.spat1_arr,self.spat2_arr,self.obj1_arr,self.obj2_arr,self.output_arr)
-          self.plotter.plot()
-        
-      print("output")
-      print(self.output_arr,'\n') 
-      print("->cue_node:{}".format(cue_node))
-      print("->cycle:{}".format(cycle),'\n')
+      self.run_cycle(iscue=True,unwanted=[17,18])
     else: 
       print("Target appear...",'\n')
-
-      # 挑掉不要的paths
-      unwanted = [17] # 將不要的路徑編號填入此 (編號請查詢上方)
-      wanted_paths = [i for i in range(len(path_functions)) if i not in unwanted]
-      path_functions = list(np.array(path_functions)[wanted_paths])
-
-      cycle = 0
-      target_node = self.output_arr[0][0]
-      threshold = 0.6 
-      while(float(target_node) < threshold):
-        shuffle(path_functions)
-
-        for path_f in path_functions:
-          path_f(self)  
-
-        target_node = self.output_arr[0][0]
-        cycle += 1
-
-        if cycle % 20 == 0:
-          print("cycle:{}".format(cycle),'\n')
-          self.plotter.set_arrs(self.input_arr,self.v1_arr,self.spat1_arr,self.spat2_arr,self.obj1_arr,self.obj2_arr,self.output_arr)
-          self.plotter.plot()
-
-      print("output")
-      print(self.output_arr,'\n') 
-      print("->target_node:{}".format(target_node))
-      print("->cycle:{}".format(cycle))
-
-      return [float(target_node), cycle]
+      return self.run_cycle(iscue=False,unwanted=[17,18])
 
 #%%
 # import numpy as np
